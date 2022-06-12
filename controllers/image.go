@@ -86,7 +86,6 @@ func drawCircle(img draw.Image, x, y, radius int, c color.Color) {
 			err += dx - (radius * 2)
 		}
 	}
-
 }
 
 func drawTriangle(img draw.Image, x, y, sideLeft, sideRight, sideBase int, c color.Color) {
@@ -98,5 +97,4 @@ func drawTriangle(img draw.Image, x, y, sideLeft, sideRight, sideBase int, c col
 	for iii := x; iii <= sideBase*2; iii++ {
 		img.Set(iii, sideBase, c)
 	}
-
 }
