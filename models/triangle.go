@@ -92,9 +92,7 @@ func (Triangle *Triangle) getSides() {
 		sideRight = width - line
 		baseRadius = i
 	}
-	baseLine := 0
 	for ii := x; ii <= baseRadius; ii++ {
-		baseLine++
 		sideBase = baseRadius * 2
 	}
 	Triangle.SideLeft = float64(sideLeft)
