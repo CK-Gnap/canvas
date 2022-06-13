@@ -2,6 +2,8 @@ package models
 
 import (
 	"errors"
+	"log"
+	"math"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -27,6 +29,10 @@ func (Triangle *Triangle) CreateShape(db *gorm.DB, Shape *Shape, canvasID string
 	Triangle.Height = Shape.Height
 
 	Triangle.getSides()
+	log.Println("SideLeft: ", Triangle.SideLeft)
+	log.Println("SideRight: ", Triangle.SideRight)
+	log.Println("SideBase: ", Triangle.SideBase)
+
 	Shape.SideLeft = Triangle.SideLeft
 	Shape.SideRight = Triangle.SideRight
 	Shape.SideBase = Triangle.SideBase
@@ -76,28 +82,45 @@ func (Triangle *Triangle) GetPerimeter() float64 {
 }
 
 func (Triangle *Triangle) getSides() {
-	x := int(Triangle.X)
-	y := int(Triangle.Y)
-	width := int(Triangle.Width)
-	height := int(Triangle.Height)
-	line := 0
-	baseRadius := 0
-	sideBase := 0
-	sideLeft := 0
-	sideRight := 0
 
-	for i := y; i <= y+height; i++ {
-		line++
-		sideLeft = width + line
-		sideRight = width - line
-		baseRadius = i
+	// x := int(Triangle.X)
+	// y := int(Triangle.Y)
+	width := Triangle.Width
+	height := Triangle.Height
+	sideA := math.Pow(height, 2)
+	sideB := math.Pow(width, 2)
+	sideC := math.Sqrt(sideA + sideB)
+
+	// calculate is triangle  from width and height
+	if width > height {
+		Triangle.SideLeft = float64(height)
+		Triangle.SideRight = float64(sideC)
+		Triangle.SideBase = float64(width)
+	} else {
+		Triangle.SideLeft = float64(height)
+		Triangle.SideRight = float64(width)
+		Triangle.SideBase = float64(sideC)
 	}
-	for ii := x; ii <= baseRadius; ii++ {
-		sideBase = baseRadius * 2
-	}
-	Triangle.SideLeft = float64(sideLeft)
-	Triangle.SideRight = float64(sideRight)
-	Triangle.SideBase = float64(sideBase)
+	// line := 0
+	// baseRadius := 0
+	// sideBase := 0
+	// sideLeft := 0
+	// sideRight := 0
+
+	// for i := y; i <= y+height; i++ {
+	// 	line++
+	// 	sideLeft = width + line
+	// 	baseRadius = i
+	// }
+
+	// sideRight = sideLeft
+
+	// for iii := x; iii <= baseRadius; iii++ {
+	// 	sideBase = width + baseRadius
+	// }
+	// Triangle.SideLeft = float64(sideLeft)
+	// Triangle.SideRight = float64(sideRight)
+	// Triangle.SideBase = float64(sideBase)
 }
 
 func (Triangle *Triangle) checkIsTriangle() (err error) {

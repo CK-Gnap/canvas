@@ -130,7 +130,7 @@ func (repository *ShapeRepo) GetImage(c *gin.Context) {
 		return
 	}
 
-	image, err := CreateImage(shape)
+	image, err := models.CreateImage(shape)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
