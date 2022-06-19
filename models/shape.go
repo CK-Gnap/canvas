@@ -1,9 +1,8 @@
 package models
 
 import (
+	"canvas/database"
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type TypeEnum string
@@ -29,28 +28,41 @@ type Shape struct {
 	Perimeter float64   `json:"perimeter"`
 	Type      TypeEnum  `json:"type"`
 	CanvasId  int64     `json:"canvas_id"`
+	Canvas    *Canvas   `json:"canvas"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt time.Time `json:"deleted_at"`
 }
 
-func GetShapes(db *gorm.DB, Shape *[]Shape, canvasID string) (err error) {
-	err = db.Where("canvas_id  = ?", canvasID).Find(Shape).Error
+func CreateShape(Shape *Shape, canvasID string) (err error) {
+	err = database.Db.Create(Shape).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func GetShape(db *gorm.DB, Shape *Shape, id string) (err error) {
-	err = db.Where("id = ?", id).First(Shape).Error
+func UpdateShape(Shape *Shape) (err error) {
+	database.Db.Save(Shape)
+	return nil
+}
+
+func GetShapes(Shape *[]Shape, canvasID string) (err error) {
+	err = database.Db.Where("canvas_id  = ?", canvasID).Preload("Canvas").Find(Shape).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func DeleteShape(db *gorm.DB, Shape *Shape, id string) (err error) {
-	db.Where("id = ?", id).Delete(Shape)
+func GetShape(Shape *Shape, id string) (CanvasId int64, Type string, err error) {
+	err = database.Db.Where("id = ?", id).Preload("Canvas").First(Shape).Error
+	if err != nil {
+		return 0, "", err
+	}
+	return Shape.CanvasId, string(Shape.Type), nil
+}
+
+func DeleteShape(Shape *Shape, id string) (err error) {
+	database.Db.Where("id = ?", id).Delete(Shape)
 	return nil
 }

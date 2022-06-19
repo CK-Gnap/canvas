@@ -27,7 +27,7 @@ func setupRouter() *gin.Engine {
 	r.DELETE("/canvas/:canvas_id", canvasRepo.DeleteCanvas)
 
 	shapeRepo := controllers.NewShapeTable()
-	r.POST("/canvas/:canvas_id/shapes", shapeRepo.CreateShape)
+	r.POST("/canvas/:canvas_id/shape/:shape_type", shapeRepo.CreateShape)
 	r.GET("/canvas/:canvas_id/shapes", shapeRepo.GetShape)
 	r.GET("/canvas/shapes/:shape_id", shapeRepo.GetShapeById)
 	r.PUT("/canvas/shapes/:shape_id", shapeRepo.UpdateShape)

@@ -22,10 +22,13 @@ func NewCanvasTable() *CanvasRepo {
 
 func (repository *CanvasRepo) CreateCanvas(c *gin.Context) {
 	var canvas models.Canvas
-	c.BindJSON(&canvas)
-	err := models.CreateCanvas(repository.Db, &canvas)
+	if err := c.BindJSON(&canvas); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	err := models.CreateCanvas(&canvas)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, canvas)
@@ -33,9 +36,9 @@ func (repository *CanvasRepo) CreateCanvas(c *gin.Context) {
 
 func (repository *CanvasRepo) GetCanvas(c *gin.Context) {
 	var canvas []models.Canvas
-	err := models.GetCanvases(repository.Db, &canvas)
+	err := models.GetCanvas(&canvas)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, canvas)
@@ -44,14 +47,14 @@ func (repository *CanvasRepo) GetCanvas(c *gin.Context) {
 func (repository *CanvasRepo) GetCanvasById(c *gin.Context) {
 	id, _ := c.Params.Get("canvas_id")
 	var canvas models.Canvas
-	err := models.GetCanvas(repository.Db, &canvas, id)
+	err := models.GetCanvasById(&canvas, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.AbortWithStatus(http.StatusNotFound)
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
 
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, canvas)
@@ -60,20 +63,23 @@ func (repository *CanvasRepo) GetCanvasById(c *gin.Context) {
 func (repository *CanvasRepo) UpdateCanvas(c *gin.Context) {
 	var canvas models.Canvas
 	id, _ := c.Params.Get("canvas_id")
-	err := models.GetCanvas(repository.Db, &canvas, id)
+	err := models.GetCanvasById(&canvas, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.AbortWithStatus(http.StatusNotFound)
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
 
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.BindJSON(&canvas)
-	err = models.UpdateCanvas(repository.Db, &canvas)
+	if err := c.BindJSON(&canvas); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	err = models.UpdateCanvas(&canvas)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, canvas)
@@ -82,9 +88,9 @@ func (repository *CanvasRepo) UpdateCanvas(c *gin.Context) {
 func (repository *CanvasRepo) DeleteCanvas(c *gin.Context) {
 	var canvas models.Canvas
 	id, _ := c.Params.Get("canvas_id")
-	err := models.DeleteCanvas(repository.Db, &canvas, id)
+	err := models.DeleteCanvas(&canvas, id)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Canvas deleted successfully"})

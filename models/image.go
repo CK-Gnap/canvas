@@ -1,19 +1,18 @@
 package models
 
 import (
+	"canvasOld/models"
+	"errors"
 	"image"
 	"image/color"
 	"image/draw"
 	"image/jpeg"
-	"log"
 	"os"
 	"strconv"
 	"strings"
 )
 
-const IMAGE_NAME = "canvas.png"
-
-func CreateImage(shapes []Shape) (string, error) {
+func CreateImage(name string, shapes []Shape) (string, error) {
 	canvas := image.NewRGBA(image.Rect(0, 0, 1000, 1000))
 	bgColor := color.RGBA{255, 255, 255, 255}
 	draw.Draw(canvas, canvas.Bounds(), &image.Uniform{bgColor}, image.ZP, draw.Src)
@@ -29,30 +28,28 @@ func CreateImage(shapes []Shape) (string, error) {
 		sideRight := int(shape.SideRight)
 		sideBase := int(shape.SideBase)
 
-		if shape.Type == "circle" {
+		if shape.Type == TypeEnum(models.CIRCLE) {
 			drawCircle(canvas, x, y, radius, convertHexToRGBA(color))
-		}
-
-		if shape.Type == "rectangle" {
+		} else if shape.Type == TypeEnum(models.RECTANGLE) {
 			item := image.Rect(x, y, width, height)
 			draw.Draw(canvas, item, &image.Uniform{convertHexToRGBA(color)}, image.ZP, draw.Src)
-		}
-
-		if shape.Type == "triangle" {
+		} else if shape.Type == TypeEnum(models.TRIANGLE) {
 			drawTriangle(canvas, x, y, width, height, sideLeft, sideRight, sideBase, convertHexToRGBA(color))
-
+		} else {
+			return "", errors.New("Invalid shape type")
 		}
 
 	}
-
-	file, err := os.Create(IMAGE_NAME)
+	canvasName := strings.ReplaceAll(strings.ToLower(name), " ", "_")
+	canvasName = "canvas_" + canvasName + ".jpg"
+	file, err := os.Create(canvasName)
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 	jpeg.Encode(file, canvas, &jpeg.Options{Quality: 100})
 
-	return IMAGE_NAME, nil
+	return canvasName, nil
 }
 
 func convertHexToRGBA(hex string) color.RGBA {
@@ -90,58 +87,9 @@ func drawCircle(img draw.Image, x0, y0, r int, c color.Color) {
 }
 
 func drawTriangle(img draw.Image, x, y, width, height, sideLeft, sideRight, sideBase int, c color.Color) {
-	// มุมฉาก
-	ff := 0
-	ff2 := 0
-	count := 0
-	for iii := x; iii <= sideBase; iii++ {
-		// if (sideBase - sideLeft) < iii {
-		ff2++
-		img.Set(sideBase-iii+x, iii, c)
-		// }
-		// img.Set(sideBase-iii-x, iii+x, c)
-
-		// if (sideBase - sideRight) < iii { // ขวา
-		ff++
-		img.Set(sideBase, iii, c)
-
-		// }
-
-		img.Set(iii, sideBase, c)
-		count = iii
+	for i := x; i <= sideBase; i++ {
+		img.Set(sideBase-i+x, i, c)
+		img.Set(sideBase, i, c)
+		img.Set(i, sideBase, c)
 	}
-
-	log.Println("count", count)
-	log.Println("ff", ff)
-	log.Println("ff2", ff2)
-
-	// for i := y; i < count; i++ {
-	// 	if (sideBase - sideLeft) < i {
-	// 		img.Set(sideBase-i+y, sideRight+i, c)
-	// 	}
-	// }
-
-	// draw triangle left to right
-	// r := count
-	// for i := y; i < count; i++ {
-	// 	r--
-	// 	if (sideBase - sideLeft) < i {
-
-	// 		img.Set(sideBase-i+y, sideRight+i+r, c)
-	// 	}
-	// }
-
-	// for i := 0; i < height; i++ {
-	// 	for j := 0; j < width; j++ {
-	// 		if i < sideLeft {
-	// 			img.Set(x+j, y+i, c)
-	// 		}
-	// 		if i < sideRight {
-	// 			img.Set(x+width-j, y+i, c)
-	// 		}
-	// 		if i < sideBase {
-	// 			img.Set(x+width/2+j, y+i, c)
-	// 		}
-	// 	}
-	// }
 }
