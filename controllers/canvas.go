@@ -5,13 +5,16 @@ import (
 	"canvas/models"
 	"errors"
 	"net/http"
+	"os"
+	"path"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 type CanvasRepo struct {
-	Db *gorm.DB
+	Db     *gorm.DB
+	Canvas models.Canvas
 }
 
 func NewCanvasTable() *CanvasRepo {
@@ -94,4 +97,37 @@ func (repository *CanvasRepo) DeleteCanvas(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Canvas deleted successfully"})
+}
+
+func (repository *CanvasRepo) GetImage(c *gin.Context) {
+	var shape []models.Shape
+	canvasID, _ := c.Params.Get("canvas_id")
+	err := models.GetShapes(&shape, canvasID)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	image, err := repository.Canvas.CreateImage()
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	fileTmp, errByOpenFile := os.Open(image)
+	if errByOpenFile != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": errByOpenFile})
+		return
+	}
+
+	defer fileTmp.Close()
+
+	fileName := path.Base(image)
+	c.Header("Content-Type", "application/octet-stream")
+	c.Header("Content-Disposition", "attachment; filename="+fileName)
+	c.Header("Content-Disposition", "inline;filename="+fileName)
+	c.Header("Content-Transfer-Encoding", "binary")
+	c.Header("Cache-Control", "no-cache")
+	c.File(image)
 }

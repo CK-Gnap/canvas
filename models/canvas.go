@@ -8,7 +8,7 @@ import (
 type Canvas struct {
 	ID        int64     `json:"id"`
 	Name      string    `json:"name"  binding:"required"`
-	Shape     *[]Shape  `json:"shape"`
+	Shapes    []Shape   `json:"shapes"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -22,7 +22,7 @@ func CreateCanvas(Canvas *Canvas) (err error) {
 }
 
 func GetCanvas(Canvas *[]Canvas) (err error) {
-	err = database.Db.Preload("Shape").Find(Canvas).Error
+	err = database.Db.Preload("Shapes").Find(Canvas).Error
 	if err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func GetCanvas(Canvas *[]Canvas) (err error) {
 }
 
 func GetCanvasById(Canvas *Canvas, id string) (err error) {
-	err = database.Db.Where("id = ?", id).Preload("Shape").First(Canvas).Error
+	err = database.Db.Where("id = ?", id).Preload("Shapes").First(Canvas).Error
 	if err != nil {
 		return err
 	}

@@ -12,12 +12,12 @@ import (
 	"strings"
 )
 
-func CreateImage(name string, shapes []Shape) (string, error) {
+func (Canvas *Canvas) CreateImage() (string, error) {
+	Shapes := Canvas.Shapes
 	canvas := image.NewRGBA(image.Rect(0, 0, 1000, 1000))
 	bgColor := color.RGBA{255, 255, 255, 255}
 	draw.Draw(canvas, canvas.Bounds(), &image.Uniform{bgColor}, image.ZP, draw.Src)
-
-	for _, shape := range shapes {
+	for _, shape := range Shapes {
 		color := shape.Color
 		x := int(shape.X)
 		y := int(shape.Y)
@@ -40,7 +40,7 @@ func CreateImage(name string, shapes []Shape) (string, error) {
 		}
 
 	}
-	canvasName := strings.ReplaceAll(strings.ToLower(name), " ", "_")
+	canvasName := strings.ReplaceAll(strings.ToLower(Canvas.Name), " ", "_")
 	canvasName = "canvas_" + canvasName + ".jpg"
 	file, err := os.Create(canvasName)
 	if err != nil {

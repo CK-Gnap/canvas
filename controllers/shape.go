@@ -5,8 +5,6 @@ import (
 	"canvas/models"
 	"errors"
 	"net/http"
-	"os"
-	"path"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -296,37 +294,4 @@ func (repository *ShapeRepo) DeleteShape(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Shape deleted successfully"})
-}
-
-func (repository *ShapeRepo) GetImage(c *gin.Context) {
-	var shape []models.Shape
-	canvasID, _ := c.Params.Get("canvas_id")
-	err := models.GetShapes(&shape, canvasID)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	image, err := models.CreateImage(shape[len(shape)-1].Canvas.Name, shape)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	fileTmp, errByOpenFile := os.Open(image)
-	if errByOpenFile != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": errByOpenFile})
-		return
-	}
-
-	defer fileTmp.Close()
-
-	fileName := path.Base(image)
-	c.Header("Content-Type", "application/octet-stream")
-	c.Header("Content-Disposition", "attachment; filename="+fileName)
-	c.Header("Content-Disposition", "inline;filename="+fileName)
-	c.Header("Content-Transfer-Encoding", "binary")
-	c.Header("Cache-Control", "no-cache")
-	c.File(image)
 }

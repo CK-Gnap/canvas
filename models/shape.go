@@ -28,7 +28,7 @@ type Shape struct {
 	Perimeter float64   `json:"perimeter"`
 	Type      TypeEnum  `json:"type"`
 	CanvasId  int64     `json:"canvas_id"`
-	Canvas    *Canvas   `json:"canvas"`
+	Canvas    Canvas    `json:"canvas"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
