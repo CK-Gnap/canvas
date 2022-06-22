@@ -62,7 +62,7 @@ func (usecase *CanvasUsecase) UpdateCanvas(Canvas *models.Canvas, id string) (*m
 	if handleGetCanvasErr != nil {
 		return nil, handleGetCanvasErr
 	}
-
+	Canvas.Id = checkCanvas.Id
 	handleUpdateCanvasErr := usecase.canvasRepo.UpdateCanvas(Canvas, id)
 	if handleUpdateCanvasErr != nil {
 		return nil, handleUpdateCanvasErr
