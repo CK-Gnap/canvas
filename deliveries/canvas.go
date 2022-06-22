@@ -15,14 +15,20 @@ type CanvasHandler struct {
 }
 
 func (handler *CanvasHandler) CreateCanvas(c *gin.Context) {
-	var req models.Canvas
+	var req models.CanvasRequestCreate
 
 	if err := c.BindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	canvas, err := handler.CanvasUsecase.CreateCanvas(&req)
+	newReq := models.Canvas{
+		Name:   req.Name,
+		Width:  req.Width,
+		Height: req.Height,
+	}
+
+	canvas, err := handler.CanvasUsecase.CreateCanvas(&newReq)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -60,15 +66,21 @@ func (handler *CanvasHandler) GetCanvas(c *gin.Context) {
 }
 
 func (handler *CanvasHandler) UpdateCanvas(c *gin.Context) {
-	var req models.Canvas
+	var req models.CanvasRequestUpdare
 	id, _ := c.Params.Get("canvas_id")
 
 	if err := c.BindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	canvas, err := handler.CanvasUsecase.UpdateCanvas(&req, id)
+	newReq := models.Canvas{
+		Name:   req.Name,
+		Width:  req.Width,
+		Height: req.Height,
+	}
+
+	canvas, err := handler.CanvasUsecase.UpdateCanvas(&newReq, id)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
