@@ -1,48 +1,35 @@
 package models
 
 import (
-	"canvas/database"
+	models "canvas/models/Interfaces"
 	"time"
 )
 
 type Canvas struct {
-	ID        int64     `json:"id"`
-	Name      string    `json:"name"  binding:"required"`
-	Shapes    []Shape   `json:"shapes"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        int64                   `json:"id"`
+	Name      string                  `json:"name"`
+	Width     float64                 `json:"width"`
+	Height    float64                 `json:"height"`
+	Color     string                  `json:"color"`
+	Shapes    []models.ShapeInterface `json:"shapes" gorm:"-"`
+	CreatedAt time.Time               `json:"created_at"`
+	UpdatedAt time.Time               `json:"updated_at"`
 }
 
-func CreateCanvas(Canvas *Canvas) (err error) {
-	err = database.Db.Create(Canvas).Error
-	if err != nil {
-		return err
-	}
-	return nil
+func (Canvas *Canvas) TableName() string {
+	return "canvas"
 }
 
-func GetCanvas(Canvas *[]Canvas) (err error) {
-	err = database.Db.Preload("Shapes").Find(Canvas).Error
-	if err != nil {
-		return err
-	}
-	return nil
+type CanvasRequestCreate struct {
+	Name   string  `json:"name"  binding:"required"`
+	Width  float64 `json:"width"  binding:"required"`
+	Height float64 `json:"height"  binding:"required"`
+	Color  string  `json:"color" binding:"required"`
 }
 
-func GetCanvasById(Canvas *Canvas, id string) (err error) {
-	err = database.Db.Where("id = ?", id).Preload("Shapes").First(Canvas).Error
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func UpdateCanvas(Canvas *Canvas) (err error) {
-	database.Db.Save(Canvas)
-	return nil
-}
-
-func DeleteCanvas(Canvas *Canvas, id string) (err error) {
-	database.Db.Where("id = ?", id).Delete(Canvas)
-	return nil
+type CanvasRequestUpdare struct {
+	Name   string  `json:"name"`
+	Width  float64 `json:"width"`
+	Height float64 `json:"height"`
+	Color  string  `json:"color"`
 }
