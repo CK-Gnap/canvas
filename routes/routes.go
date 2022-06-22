@@ -24,7 +24,7 @@ func SetupRouter() *gin.Engine {
 	shapeRepo := repositories.NewShapeRepo(database.InitDb())
 
 	//* usecases
-	canvasUsecase := usecases.NewCanvasUsecase(canvasRepo)
+	canvasUsecase := usecases.NewCanvasUsecase(canvasRepo, shapeRepo)
 	shapeUsecase := usecases.NewShapeUsecase(canvasRepo, shapeRepo)
 
 	//* deliveries

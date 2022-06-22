@@ -6,7 +6,7 @@ import (
 )
 
 type Canvas struct {
-	ID        int64                   `json:"id"`
+	Id        int64                   `json:"id"`
 	Name      string                  `json:"name"`
 	Width     float64                 `json:"width"`
 	Height    float64                 `json:"height"`
