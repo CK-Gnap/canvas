@@ -108,7 +108,7 @@ func (handler *ShapeHandler) UpdateShape(c *gin.Context) {
 	id, _ := c.Params.Get("shape_id")
 	var req models.ShapeRequestUpdate
 	if err := c.BindJSON(&req); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
