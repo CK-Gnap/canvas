@@ -21,10 +21,10 @@ func (Canvas *Canvas) TableName() string {
 }
 
 type CanvasRequestCreate struct {
-	Name   string  `json:"name"  binding:"required"`
-	Width  float64 `json:"width"  binding:"required"`
-	Height float64 `json:"height"  binding:"required"`
-	Color  string  `json:"color"`
+	Name   string  `json:"name" binding:"required"`
+	Width  float64 `json:"width" binding:"required"`
+	Height float64 `json:"height" binding:"required"`
+	Color  string  `json:"color" binding:"required"`
 }
 
 type CanvasRequestUpdare struct {
