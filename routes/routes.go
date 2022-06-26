@@ -45,6 +45,9 @@ func canvasDelivery(r *gin.Engine, usecase usecases_interfaces.CanvasUsecaseInte
 	r.GET("/canvas/:canvas_id", handler.GetCanvas)
 	r.PUT("/canvas/:canvas_id", handler.UpdateCanvas)
 	r.DELETE("/canvas/:canvas_id", handler.DeleteCanvas)
+	r.GET("/canvas/:canvas_id/totalArea", handler.GetTotalArea)
+	r.GET("/canvas/:canvas_id/totalPerimeter", handler.GetTotalPerimeter)
+	r.GET("/canvas/:canvas_id/image", handler.DrawCanvas)
 }
 
 func shapeDelivery(r *gin.Engine, usecase usecases_interfaces.ShapeUsecaseInterface) {
@@ -60,5 +63,4 @@ func shapeDelivery(r *gin.Engine, usecase usecases_interfaces.ShapeUsecaseInterf
 	r.GET("/canvas/shapes/:shape_id", handler.GetShape)
 	r.PUT("/canvas/shapes/:shape_id", handler.UpdateShape)
 	r.DELETE("/canvas/shapes/:shape_id", handler.DeleteShape)
-	// r.GET("/canvas/:canvas_id/image", handler.GetImage)
 }

@@ -1,10 +1,12 @@
 package deliveries
 
 import (
-	"canvas/models"
+	models "canvas/models"
 	usecases "canvas/usecases/Interfaces"
 	"errors"
 	"net/http"
+	"os"
+	"path"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -102,28 +104,66 @@ func (handler *CanvasHandler) DeleteCanvas(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Canvas deleted successfully"})
 }
 
-// func (handler *CanvasHandler) GetImage(c *gin.Context) {
-// 	var shape []models.ShapeInterface
-// 	image, err := models.CreateImage("image", shape)
+func (handler *CanvasHandler) GetTotalArea(c *gin.Context) {
+	var req models.Canvas
+	id, _ := c.Params.Get("canvas_id")
 
-// 	if err != nil {
-// 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	totalArea, err := handler.CanvasUsecase.GetTotalArea(&req, id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	fileTmp, errByOpenFile := os.Open(image)
-// 	if errByOpenFile != nil {
-// 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": errByOpenFile})
-// 		return
-// 	}
+	c.JSON(http.StatusOK, totalArea)
+}
 
-// 	defer fileTmp.Close()
+func (handler *CanvasHandler) GetTotalPerimeter(c *gin.Context) {
+	var req models.Canvas
+	id, _ := c.Params.Get("canvas_id")
 
-// 	fileName := path.Base(image)
-// 	c.Header("Content-Type", "application/octet-stream")
-// 	c.Header("Content-Disposition", "attachment; filename="+fileName)
-// 	c.Header("Content-Disposition", "inline;filename="+fileName)
-// 	c.Header("Content-Transfer-Encoding", "binary")
-// 	c.Header("Cache-Control", "no-cache")
-// 	c.File(image)
-// }
+	totalPerimeter, err := handler.CanvasUsecase.GetTotalPerimeter(&req, id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, totalPerimeter)
+}
+
+func (handler *CanvasHandler) DrawCanvas(c *gin.Context) {
+	id, _ := c.Params.Get("canvas_id")
+	var req models.Canvas
+
+	canvas, err := handler.CanvasUsecase.GetCanvas(&req, id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	image, errDrawCanvas := handler.CanvasUsecase.DrawCanvas(canvas, id)
+	if errDrawCanvas != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": errDrawCanvas.Error()})
+		return
+	}
+
+	fileTmp, errByOpenFile := os.Open(image)
+	if errByOpenFile != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": errByOpenFile.Error()})
+		return
+	}
+
+	defer fileTmp.Close()
+
+	fileName := path.Base(image)
+	c.Header("Content-Type", "application/octet-stream")
+	c.Header("Content-Disposition", "attachment; filename="+fileName)
+	c.Header("Content-Disposition", "inline;filename="+fileName)
+	c.Header("Content-Transfer-Encoding", "binary")
+	c.Header("Cache-Control", "no-cache")
+	c.File(image)
+}
