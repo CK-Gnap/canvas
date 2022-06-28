@@ -251,3 +251,110 @@ func TestDeleteCanvas(t *testing.T) {
 		})
 	}
 }
+
+func TestGetTotalArea(t *testing.T) {
+	var shapes []models.Shape
+	tests := []struct {
+		name   string
+		id     string
+		canvas models.Canvas
+		want   float64
+	}{
+		{
+			name: "when happy",
+			id:   "1",
+			canvas: models.Canvas{
+				Id:     1,
+				Name:   "test",
+				Width:  100,
+				Height: 100,
+				Color:  "#ffffff",
+			},
+			want: 0,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCanvasRepo := new(mocks.CanvasRepoInterface)
+			mockShapeRepo := new(mocks.ShapeRepoInterface)
+			mockCanvasRepo.On("GetCanvas", &test.canvas, test.id).Return(nil).Once()
+			mockShapeRepo.On("GetShapes", &shapes, test.id).Return(&shapes, nil).Once()
+			usecase := NewCanvasUsecase(mockCanvasRepo, mockShapeRepo)
+			got, _ := usecase.GetTotalArea(&test.canvas, test.id)
+			if got != test.want {
+				t.Errorf("got %v, want %v", got, test.want)
+			}
+			mockCanvasRepo.AssertExpectations(t)
+			mockShapeRepo.AssertExpectations(t)
+		})
+	}
+}
+
+func TestGetTotalPerimeter(t *testing.T) {
+	var shapes []models.Shape
+	tests := []struct {
+		name   string
+		id     string
+		canvas models.Canvas
+		want   float64
+	}{
+		{
+			name: "when happy",
+			id:   "1",
+			canvas: models.Canvas{
+				Id:     1,
+				Name:   "test",
+				Width:  100,
+				Height: 100,
+				Color:  "#ffffff",
+			},
+			want: 0,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCanvasRepo := new(mocks.CanvasRepoInterface)
+			mockShapeRepo := new(mocks.ShapeRepoInterface)
+			mockCanvasRepo.On("GetCanvas", &test.canvas, test.id).Return(nil).Once()
+			mockShapeRepo.On("GetShapes", &shapes, test.id).Return(&shapes, nil).Once()
+			usecase := NewCanvasUsecase(mockCanvasRepo, mockShapeRepo)
+			got, _ := usecase.GetTotalPerimeter(&test.canvas, test.id)
+			if got != test.want {
+				t.Errorf("got %v, want %v", got, test.want)
+			}
+			mockCanvasRepo.AssertExpectations(t)
+			mockShapeRepo.AssertExpectations(t)
+		})
+	}
+}
+
+func TestDrawCanvas(t *testing.T) {
+	tests := []struct {
+		name   string
+		id     string
+		canvas models.Canvas
+		want   string
+	}{
+		{
+			name: "when happy",
+			id:   "1",
+			canvas: models.Canvas{
+				Id:     1,
+				Name:   "test",
+				Width:  100,
+				Height: 100,
+				Color:  "#ffffff",
+			},
+			want: "test.jpg",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			usecase := CanvasUsecase{}
+			got, _ := usecase.DrawCanvas(&test.canvas, test.id)
+			if got != test.want {
+				t.Errorf("got %v, want %v", got, test.want)
+			}
+		})
+	}
+}
