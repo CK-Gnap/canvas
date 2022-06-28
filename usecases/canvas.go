@@ -27,7 +27,7 @@ func NewCanvasUsecase(canvasRepoInterface repositories_interfaces.CanvasRepoInte
 func (usecase *CanvasUsecase) CreateCanvas(Canvas *models.Canvas) (*models.Canvas, error) {
 	handleCanvasErr := usecase.canvasRepo.CreateCanvas(Canvas)
 	if handleCanvasErr != nil {
-		return nil, handleCanvasErr
+		return nil, errors.New("Error creating canvas")
 	}
 
 	return Canvas, nil
@@ -38,7 +38,7 @@ func (usecase *CanvasUsecase) GetCanvases() ([]models.Canvas, error) {
 
 	handleCanvasErr := usecase.canvasRepo.GetCanvases(&canvases)
 	if handleCanvasErr != nil {
-		return nil, handleCanvasErr
+		return nil, errors.New("Error getting canvases")
 	}
 
 	for index, canvas := range canvases {
@@ -51,7 +51,7 @@ func (usecase *CanvasUsecase) GetCanvases() ([]models.Canvas, error) {
 func (usecase *CanvasUsecase) GetCanvas(Canvas *models.Canvas, id string) (*models.Canvas, error) {
 	handleCanvasErr := usecase.canvasRepo.GetCanvas(Canvas, id)
 	if handleCanvasErr != nil {
-		return nil, handleCanvasErr
+		return nil, errors.New("Error getting canvas")
 	}
 
 	Canvas.Shapes = *usecase.getShapes(Canvas)
@@ -85,12 +85,13 @@ func (usecase *CanvasUsecase) UpdateCanvas(Canvas *models.Canvas, id string) (*m
 
 	handleGetCanvasErr := usecase.canvasRepo.GetCanvas(&checkCanvas, id)
 	if handleGetCanvasErr != nil {
-		return nil, handleGetCanvasErr
+		return nil, errors.New("Error getting canvas")
 	}
+
 	Canvas.Id = checkCanvas.Id
 	handleUpdateCanvasErr := usecase.canvasRepo.UpdateCanvas(Canvas, id)
 	if handleUpdateCanvasErr != nil {
-		return nil, handleUpdateCanvasErr
+		return nil, errors.New("Error updating canvas")
 	}
 
 	return Canvas, nil
@@ -101,10 +102,13 @@ func (usecase *CanvasUsecase) DeleteCanvas(Canvas *models.Canvas, id string) err
 
 	handleGetCanvasErr := usecase.canvasRepo.GetCanvas(&checkCanvas, id)
 	if handleGetCanvasErr != nil {
-		return handleGetCanvasErr
+		return errors.New("Error getting canvas")
 	}
 
 	handleCanvasErr := usecase.canvasRepo.DeleteCanvas(Canvas, id)
+	if handleCanvasErr != nil {
+		return errors.New("Error deleting canvas")
+	}
 
 	return handleCanvasErr
 }
@@ -114,7 +118,7 @@ func (usecase *CanvasUsecase) GetTotalArea(Canvas *models.Canvas, id string) (fl
 
 	canvas, err := usecase.GetCanvas(Canvas, id)
 	if err != nil {
-		return 0, err
+		return 0, errors.New("Error getting canvas")
 	}
 
 	for _, shape := range canvas.Shapes {
@@ -175,6 +179,9 @@ func (usecase *CanvasUsecase) DrawCanvas(Canvas *models.Canvas, id string) (stri
 
 func drawCircle(dc *gg.Context, x, y, radius float64, color string) {
 	dc.DrawCircle(x, y, radius)
+	// dc.SetHexColor("ffffff")
+	// dc.SetFillRule(gg.FillRuleEvenOdd)
+	// dc.FillPreserve()
 	dc.SetHexColor(color)
 	dc.SetLineWidth(1)
 	dc.Stroke()
@@ -182,6 +189,9 @@ func drawCircle(dc *gg.Context, x, y, radius float64, color string) {
 
 func drawRectangle(dc *gg.Context, x, y, width, height float64, color string) {
 	dc.DrawRectangle(x, y, width, height)
+	// dc.SetHexColor("ffffff")
+	// dc.SetFillRule(gg.FillRuleEvenOdd)
+	// dc.FillPreserve()
 	dc.SetHexColor(color)
 	dc.SetLineWidth(1)
 	dc.Stroke()
@@ -191,6 +201,9 @@ func drawTriangle(dc *gg.Context, x, y, width, height float64, color string) {
 	dc.DrawLine(x, y, x+width, y)
 	dc.DrawLine(x+width, y, x+width/2, y+height)
 	dc.DrawLine(x, y, x+width/2, y+height)
+	// dc.SetHexColor("ffffff")
+	// dc.SetFillRule(gg.FillRuleEvenOdd)
+	// dc.FillPreserve()
 	dc.SetHexColor(color)
 	dc.SetLineWidth(1)
 	dc.Stroke()

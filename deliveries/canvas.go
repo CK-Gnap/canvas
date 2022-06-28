@@ -28,6 +28,7 @@ func (handler *CanvasHandler) CreateCanvas(c *gin.Context) {
 		Name:   req.Name,
 		Width:  req.Width,
 		Height: req.Height,
+		Color:  req.Color,
 	}
 
 	canvas, err := handler.CanvasUsecase.CreateCanvas(&newReq)
@@ -80,6 +81,7 @@ func (handler *CanvasHandler) UpdateCanvas(c *gin.Context) {
 		Name:   req.Name,
 		Width:  req.Width,
 		Height: req.Height,
+		Color:  req.Color,
 	}
 
 	canvas, err := handler.CanvasUsecase.UpdateCanvas(&newReq, id)
