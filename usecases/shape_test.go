@@ -51,7 +51,7 @@ func TestCreateRectangleShape(t *testing.T) {
 
 			mockCanvasRepo := new(mocks.CanvasRepoInterface)
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
-			if test.canvasId == "" {
+			if test.isErr {
 				mockCanvasRepo.On("GetCanvas", &models.Canvas{}, test.canvasId).Return(errors.New("Error getting canvas")).Once()
 				usecase := NewCanvasUsecase(mockCanvasRepo, mockShapeRepo)
 				_, err := usecase.GetCanvas(&models.Canvas{}, test.canvasId)
@@ -128,7 +128,7 @@ func TestCreateCircleShape(t *testing.T) {
 
 			mockCanvasRepo := new(mocks.CanvasRepoInterface)
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
-			if test.canvasId == "" {
+			if test.isErr {
 				mockCanvasRepo.On("GetCanvas", &models.Canvas{}, test.canvasId).Return(errors.New("Error getting canvas")).Once()
 				usecase := NewCanvasUsecase(mockCanvasRepo, mockShapeRepo)
 				_, err := usecase.GetCanvas(&models.Canvas{}, test.canvasId)
@@ -206,7 +206,7 @@ func TestCreateTriangleShape(t *testing.T) {
 
 			mockCanvasRepo := new(mocks.CanvasRepoInterface)
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
-			if test.canvasId == "" {
+			if test.isErr {
 				mockCanvasRepo.On("GetCanvas", &models.Canvas{}, test.canvasId).Return(errors.New("Error getting canvas")).Once()
 				usecase := NewCanvasUsecase(mockCanvasRepo, mockShapeRepo)
 				_, err := usecase.GetCanvas(&models.Canvas{}, test.canvasId)
@@ -243,69 +243,55 @@ func TestCreateTriangleShape(t *testing.T) {
 	}
 }
 
-// test get shapes usecase
-// func TestGetShapes(t *testing.T) {
-// 	shapes := []models.Shape{
-// 		{
-// 			Id:       1,
-// 			Type:     models.CIRCLE,
-// 			CanvasId: 1,
-// 			X:        10,
-// 			Y:        10,
-// 			Radius:   100,
-// 			Color:    "#ffffff",
-// 		},
-// 		{
-// 			Id:       2,
-// 			Type:     models.TRIANGLE,
-// 			CanvasId: 1,
-// 			X:        10,
-// 			Y:        10,
-// 			Width:    100,
-// 			Height:   100,
-// 			Color:    "#ffffff",
-// 		},
-// 		{
-// 			Id:       3,
-// 			Type:     models.RECTANGLE,
-// 			CanvasId: 1,
-// 			X:        10,
-// 			Y:        10,
-// 			Width:    100,
-// 			Height:   100,
-// 			Color:    "#ffffff",
-// 		},
-// 	}
-// 	tests := []struct {
-// 		name     string
-// 		canvasId string
-// 		isErr    bool
-// 	}{
-// 		{
-// 			name:     "when happy",
-// 			canvasId: "1",
-// 			isErr:    false,
-// 		},
-// 	}
-// 	for _, test := range tests {
-// 		t.Run(test.name, func(t *testing.T) {
-// 			mockShapeRepo := new(mocks.ShapeRepoInterface)
-// 			if test.isErr {
-// 				mockShapeRepo.On("GetShapes", &shapes, test.canvasId).Return(&shapes, errors.New("Error getting shapes")).Once()
-// 			} else {
-// 				mockShapeRepo.On("GetShapes", &shapes, test.canvasId).Return(&shapes, nil).Once()
-// 			}
-// 			usecase := NewShapeUsecase(nil, mockShapeRepo)
-// 			_, err := usecase.GetShapes(test.canvasId)
-// 			if test.isErr {
-// 				assert.Error(t, err)
-// 			} else {
-// 				assert.NoError(t, err)
-// 			}
-// 			mockShapeRepo.AssertExpectations(t)
-// 		})
-// 	}
-// }
+func TestGetShapes(t *testing.T) {
+	var shapes []models.Shape
+	tests := []struct {
+		name     string
+		canvasId string
+		isErr    bool
+	}{
+		{
+			name:     "when happy",
+			canvasId: "1",
+			isErr:    false,
+		},
+		{
+			name:     "when unhappy",
+			canvasId: "",
+			isErr:    true,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCanvasRepo := new(mocks.CanvasRepoInterface)
+			mockShapeRepo := new(mocks.ShapeRepoInterface)
+			if test.isErr {
+				mockCanvasRepo.On("GetCanvas", &models.Canvas{}, test.canvasId).Return(errors.New("Error getting canvas")).Once()
+				usecase := NewCanvasUsecase(mockCanvasRepo, mockShapeRepo)
+				_, err := usecase.GetCanvas(&models.Canvas{}, test.canvasId)
+				assert.Error(t, err)
+				mockCanvasRepo.AssertExpectations(t)
+			} else {
+				mockCanvasRepo.On("GetCanvas", &models.Canvas{}, test.canvasId).Return(nil).Once()
+				if test.isErr {
+					mockShapeRepo.On("GetShapes", &shapes, test.canvasId).Return(nil, errors.New("Error getting shapes")).Once()
+				} else {
+					mockShapeRepo.On("GetShapes", &shapes, test.canvasId).Return(&shapes, nil).Once()
+				}
+
+				usecase := NewShapeUsecase(mockCanvasRepo, mockShapeRepo)
+				_, err := usecase.GetShapes(test.canvasId)
+				if test.isErr {
+					assert.Error(t, err)
+				} else {
+					assert.NoError(t, err)
+				}
+				mockCanvasRepo.AssertExpectations(t)
+				mockShapeRepo.AssertExpectations(t)
+			}
+		})
+	}
+}
 
 func TestGetShape(t *testing.T) {
 
@@ -329,7 +315,7 @@ func TestGetShape(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
-			if test.id == "" {
+			if test.isErr {
 				mockShapeRepo.On("GetShape", &models.Shape{}, test.id).Return(errors.New("Error getting shape")).Once()
 				usecase := NewShapeUsecase(nil, mockShapeRepo)
 				_, err := usecase.GetShape(&models.Shape{}, test.id)
@@ -419,7 +405,7 @@ func TestUpdateShape(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
-			if test.id == "" {
+			if test.isErr {
 				mockShapeRepo.On("GetShape", &models.Shape{}, test.id).Return(errors.New("Error getting shape")).Once()
 				usecase := NewShapeUsecase(nil, mockShapeRepo)
 				_, err := usecase.GetShape(&models.Shape{}, test.id)
@@ -465,7 +451,7 @@ func TestDeleteShape(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
-			if test.id == "" {
+			if test.isErr {
 				mockShapeRepo.On("GetShape", &models.Shape{}, test.id).Return(errors.New("Error getting shape")).Once()
 				usecase := NewShapeUsecase(nil, mockShapeRepo)
 				_, err := usecase.GetShape(&models.Shape{}, test.id)

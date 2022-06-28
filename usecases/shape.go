@@ -102,12 +102,19 @@ func (usecase *ShapeUsecase) CreateTriangleShape(Triangle *models.Triangle, canv
 }
 
 func (usecase *ShapeUsecase) GetShapes(canvasID string) ([]models_interfaces.ShapeInterface, error) {
-	var shapes []models.Shape
-	items, handleShapeErr := usecase.shapeRepo.GetShapes(&shapes, canvasID)
+	var canvas models.Canvas
+	var shapesModel []models.Shape
+
+	handleGetCanvasErr := usecase.canvasRepo.GetCanvas(&canvas, canvasID)
+	if handleGetCanvasErr != nil {
+		return nil, errors.New("Error getting canvas")
+	}
+
+	shapes, handleShapeErr := usecase.shapeRepo.GetShapes(&shapesModel, canvasID)
 	if handleShapeErr != nil {
 		return nil, errors.New("Error getting shapes")
 	}
-	return usecase.convertTypeOfShapes(items), nil
+	return usecase.convertTypeOfShapes(shapes), nil
 }
 
 func (usecase *ShapeUsecase) GetShape(Shape *models.Shape, id string) (models_interfaces.ShapeInterface, error) {
