@@ -2,8 +2,9 @@ package models
 
 import (
 	models_interfaces "canvas/models/Interfaces"
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestConvertToCircle(t *testing.T) {
@@ -37,9 +38,7 @@ func TestConvertToCircle(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			got := ConvertToCircle(test.shape)
-			if !reflect.DeepEqual(got, test.want) {
-				t.Errorf("ConvertToCircle() = %v, want %v", got, test.want)
-			}
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
@@ -62,9 +61,7 @@ func TestGetTypeCircle(t *testing.T) {
 				Type: test.shapeType,
 			}
 			got := shape.GetType()
-			if got != test.want {
-				t.Errorf("shape.GetTypeCircle() = %v, want %v", got, test.want)
-			}
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
@@ -87,9 +84,7 @@ func TestGetAreaCircle(t *testing.T) {
 				Radius: test.radius,
 			}
 			got := shape.GetArea()
-			if got != test.want {
-				t.Errorf("shape.GetAreaCircle() = %v, want %v", got, test.want)
-			}
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
@@ -112,9 +107,7 @@ func TestGetPerimeterCircle(t *testing.T) {
 				Radius: test.radius,
 			}
 			got := shape.GetPerimeter()
-			if got != test.want {
-				t.Errorf("shape.GetPerimeterCircle() = %v, want %v", got, test.want)
-			}
+			assert.Equal(t, test.want, got)
 		})
 	}
 }

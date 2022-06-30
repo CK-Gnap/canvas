@@ -45,7 +45,7 @@ func (usecase *ShapeUsecase) CreateRectangleShape(Rectangle *models.Rectangle, c
 		return nil, errors.New("Error creating shape")
 	}
 
-	return usecase.convertTypeOfShape(&shape), nil
+	return ConvertTypeOfShape(&shape), nil
 }
 
 func (usecase *ShapeUsecase) CreateCircleShape(Circle *models.Circle, canvasID string) (models_interfaces.ShapeInterface, error) {
@@ -71,7 +71,7 @@ func (usecase *ShapeUsecase) CreateCircleShape(Circle *models.Circle, canvasID s
 		return nil, handleShapeErr
 	}
 
-	return usecase.convertTypeOfShape(&shape), nil
+	return ConvertTypeOfShape(&shape), nil
 }
 
 func (usecase *ShapeUsecase) CreateTriangleShape(Triangle *models.Triangle, canvasID string) (models_interfaces.ShapeInterface, error) {
@@ -98,7 +98,7 @@ func (usecase *ShapeUsecase) CreateTriangleShape(Triangle *models.Triangle, canv
 		return nil, handleShapeErr
 	}
 
-	return usecase.convertTypeOfShape(&shape), nil
+	return ConvertTypeOfShape(&shape), nil
 }
 
 func (usecase *ShapeUsecase) GetShapes(canvasID string) ([]models_interfaces.ShapeInterface, error) {
@@ -114,7 +114,7 @@ func (usecase *ShapeUsecase) GetShapes(canvasID string) ([]models_interfaces.Sha
 	if handleShapeErr != nil {
 		return nil, errors.New("Error getting shapes")
 	}
-	return usecase.convertTypeOfShapes(shapes), nil
+	return ConvertTypeOfShapes(shapes), nil
 }
 
 func (usecase *ShapeUsecase) GetShape(Shape *models.Shape, id string) (models_interfaces.ShapeInterface, error) {
@@ -123,7 +123,7 @@ func (usecase *ShapeUsecase) GetShape(Shape *models.Shape, id string) (models_in
 		return nil, errors.New("Error getting shape")
 	}
 
-	return usecase.convertTypeOfShape(Shape), nil
+	return ConvertTypeOfShape(Shape), nil
 }
 
 func (usecase *ShapeUsecase) UpdateShape(Shape *models.Shape, id string) (models_interfaces.ShapeInterface, error) {
@@ -142,7 +142,7 @@ func (usecase *ShapeUsecase) UpdateShape(Shape *models.Shape, id string) (models
 		return nil, errors.New("Error updating shape")
 	}
 
-	return usecase.convertTypeOfShape(update), nil
+	return ConvertTypeOfShape(update), nil
 }
 
 func (usecase *ShapeUsecase) DeleteShape(Shape *models.Shape, id string) error {
@@ -160,17 +160,17 @@ func (usecase *ShapeUsecase) DeleteShape(Shape *models.Shape, id string) error {
 	return handleShapeErr
 }
 
-func (usecase *ShapeUsecase) convertTypeOfShapes(Shapes *[]models.Shape) []models_interfaces.ShapeInterface {
+func ConvertTypeOfShapes(Shapes *[]models.Shape) []models_interfaces.ShapeInterface {
 	shapeInterfaces := []models_interfaces.ShapeInterface{}
 
 	for _, Shape := range *Shapes {
-		shapeInterfaces = append(shapeInterfaces, usecase.convertTypeOfShape(&Shape))
+		shapeInterfaces = append(shapeInterfaces, ConvertTypeOfShape(&Shape))
 	}
 
 	return shapeInterfaces
 }
 
-func (usecase *ShapeUsecase) convertTypeOfShape(Shape *models.Shape) models_interfaces.ShapeInterface {
+func ConvertTypeOfShape(Shape *models.Shape) models_interfaces.ShapeInterface {
 	switch Shape.Type {
 	case models.RECTANGLE:
 		return models.ConvertToRectangle(Shape)

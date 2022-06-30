@@ -2,8 +2,9 @@ package models
 
 import (
 	models_interfaces "canvas/models/Interfaces"
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestConvertToTriangle(t *testing.T) {
@@ -39,9 +40,7 @@ func TestConvertToTriangle(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			got := ConvertToTriangle(test.shape)
-			if !reflect.DeepEqual(got, test.want) {
-				t.Errorf("ConvertToTriangle() = %v, want %v", got, test.want)
-			}
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
@@ -64,9 +63,7 @@ func TestGetTypeTriangle(t *testing.T) {
 				Type: test.shapeType,
 			}
 			got := shape.GetType()
-			if got != test.want {
-				t.Errorf("shape.GetTypeTriangle() = %v, want %v", got, test.want)
-			}
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
@@ -92,9 +89,7 @@ func TestGetAreaTriangle(t *testing.T) {
 				Height: test.Height,
 			}
 			got := shape.GetArea()
-			if got != test.want {
-				t.Errorf("shape.GetAreaTriangle() = %v, want %v", got, test.want)
-			}
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
@@ -120,9 +115,7 @@ func TestGetPerimeterTriangle(t *testing.T) {
 				Height: test.Height,
 			}
 			got := shape.GetPerimeter()
-			if got != test.want {
-				t.Errorf("shape.GetPerimeterTriangle() = %v, want %v", got, test.want)
-			}
+			assert.Equal(t, test.want, got)
 		})
 	}
 }

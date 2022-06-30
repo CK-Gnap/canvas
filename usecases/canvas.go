@@ -42,7 +42,7 @@ func (usecase *CanvasUsecase) GetCanvases() ([]models.Canvas, error) {
 	}
 
 	for index, canvas := range canvases {
-		canvases[index].Shapes = *usecase.getShapes(&canvas)
+		canvases[index].Shapes = *usecase.getShapes(canvas.Id)
 	}
 
 	return canvases, nil
@@ -54,16 +54,16 @@ func (usecase *CanvasUsecase) GetCanvas(Canvas *models.Canvas, id string) (*mode
 		return nil, errors.New("Error getting canvas")
 	}
 
-	Canvas.Shapes = *usecase.getShapes(Canvas)
+	Canvas.Shapes = *usecase.getShapes(Canvas.Id)
 
 	return Canvas, nil
 }
 
-func (usecase *CanvasUsecase) getShapes(Canvas *models.Canvas) *[]models_interfaces.ShapeInterface {
+func (usecase *CanvasUsecase) getShapes(CanvasId int64) *[]models_interfaces.ShapeInterface {
 	canvasShapes := []models_interfaces.ShapeInterface{}
 	var shapes []models.Shape
 
-	getShapes, _ := usecase.shapeRepo.GetShapes(&shapes, fmt.Sprintf("%v", Canvas.Id))
+	getShapes, _ := usecase.shapeRepo.GetShapes(&shapes, fmt.Sprintf("%v", CanvasId))
 	for _, shape := range *getShapes {
 		switch shape.Type {
 		case models.RECTANGLE:
@@ -179,9 +179,6 @@ func (usecase *CanvasUsecase) DrawCanvas(Canvas *models.Canvas, id string) (stri
 
 func drawCircle(dc *gg.Context, x, y, radius float64, color string) {
 	dc.DrawCircle(x, y, radius)
-	// dc.SetHexColor("ffffff")
-	// dc.SetFillRule(gg.FillRuleEvenOdd)
-	// dc.FillPreserve()
 	dc.SetHexColor(color)
 	dc.SetLineWidth(1)
 	dc.Stroke()
@@ -189,9 +186,6 @@ func drawCircle(dc *gg.Context, x, y, radius float64, color string) {
 
 func drawRectangle(dc *gg.Context, x, y, width, height float64, color string) {
 	dc.DrawRectangle(x, y, width, height)
-	// dc.SetHexColor("ffffff")
-	// dc.SetFillRule(gg.FillRuleEvenOdd)
-	// dc.FillPreserve()
 	dc.SetHexColor(color)
 	dc.SetLineWidth(1)
 	dc.Stroke()
@@ -201,9 +195,6 @@ func drawTriangle(dc *gg.Context, x, y, width, height float64, color string) {
 	dc.DrawLine(x, y, x+width, y)
 	dc.DrawLine(x+width, y, x+width/2, y+height)
 	dc.DrawLine(x, y, x+width/2, y+height)
-	// dc.SetHexColor("ffffff")
-	// dc.SetFillRule(gg.FillRuleEvenOdd)
-	// dc.FillPreserve()
 	dc.SetHexColor(color)
 	dc.SetLineWidth(1)
 	dc.Stroke()
