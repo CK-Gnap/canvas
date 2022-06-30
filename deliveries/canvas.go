@@ -1,6 +1,7 @@
 package deliveries
 
 import (
+	"canvas/constants"
 	models "canvas/models"
 	usecases "canvas/usecases/Interfaces"
 	"errors"
@@ -20,7 +21,7 @@ func (handler *CanvasHandler) CreateCanvas(c *gin.Context) {
 	var req models.CanvasRequestCreate
 
 	if err := c.BindJSON(&req); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		responseError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -33,21 +34,21 @@ func (handler *CanvasHandler) CreateCanvas(c *gin.Context) {
 
 	canvas, err := handler.CanvasUsecase.CreateCanvas(&newReq)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		responseError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, canvas)
+	responseSuccess(c, http.StatusOK, constants.SuccessCreateCavas, canvas)
 }
 
 func (handler *CanvasHandler) GetCanvases(c *gin.Context) {
 	canvas, err := handler.CanvasUsecase.GetCanvases()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		responseError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, canvas)
+	responseSuccess(c, http.StatusOK, constants.SuccessGetCanvases, canvas)
 }
 
 func (handler *CanvasHandler) GetCanvas(c *gin.Context) {
@@ -57,15 +58,15 @@ func (handler *CanvasHandler) GetCanvas(c *gin.Context) {
 	canvas, err := handler.CanvasUsecase.GetCanvas(&req, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			responseError(c, http.StatusNotFound, err)
 			return
 		}
 
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		responseError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, canvas)
+	responseSuccess(c, http.StatusOK, constants.SuccessGetCanvas, canvas)
 }
 
 func (handler *CanvasHandler) UpdateCanvas(c *gin.Context) {
@@ -73,7 +74,7 @@ func (handler *CanvasHandler) UpdateCanvas(c *gin.Context) {
 	id, _ := c.Params.Get("canvas_id")
 
 	if err := c.BindJSON(&req); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		responseError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -86,11 +87,11 @@ func (handler *CanvasHandler) UpdateCanvas(c *gin.Context) {
 
 	canvas, err := handler.CanvasUsecase.UpdateCanvas(&newReq, id)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		responseError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, canvas)
+	responseSuccess(c, http.StatusOK, constants.SuccessUpdateCanvas, canvas)
 }
 
 func (handler *CanvasHandler) DeleteCanvas(c *gin.Context) {
@@ -99,11 +100,11 @@ func (handler *CanvasHandler) DeleteCanvas(c *gin.Context) {
 
 	err := handler.CanvasUsecase.DeleteCanvas(&req, id)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		responseError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Canvas deleted successfully"})
+	responseSuccess(c, http.StatusOK, constants.SuccessDeleteCanvas, nil)
 }
 
 func (handler *CanvasHandler) GetTotalArea(c *gin.Context) {
@@ -112,11 +113,11 @@ func (handler *CanvasHandler) GetTotalArea(c *gin.Context) {
 
 	totalArea, err := handler.CanvasUsecase.GetTotalArea(&req, id)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		responseError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, totalArea)
+	responseSuccess(c, http.StatusOK, constants.SuccessTotalArea, totalArea)
 }
 
 func (handler *CanvasHandler) GetTotalPerimeter(c *gin.Context) {
@@ -125,11 +126,11 @@ func (handler *CanvasHandler) GetTotalPerimeter(c *gin.Context) {
 
 	totalPerimeter, err := handler.CanvasUsecase.GetTotalPerimeter(&req, id)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		responseError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, totalPerimeter)
+	responseSuccess(c, http.StatusOK, constants.SuccessTotalPerimeter, totalPerimeter)
 }
 
 func (handler *CanvasHandler) DrawCanvas(c *gin.Context) {
@@ -139,23 +140,22 @@ func (handler *CanvasHandler) DrawCanvas(c *gin.Context) {
 	canvas, err := handler.CanvasUsecase.GetCanvas(&req, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			responseError(c, http.StatusNotFound, err)
 			return
 		}
-
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		responseError(c, http.StatusInternalServerError, err)
 		return
 	}
 
 	image, errDrawCanvas := handler.CanvasUsecase.DrawCanvas(canvas, id)
 	if errDrawCanvas != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": errDrawCanvas.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": errDrawCanvas})
 		return
 	}
 
 	fileTmp, errByOpenFile := os.Open(image)
 	if errByOpenFile != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": errByOpenFile.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": errByOpenFile})
 		return
 	}
 

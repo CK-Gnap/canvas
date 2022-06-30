@@ -1,6 +1,7 @@
 package deliveries
 
 import (
+	"canvas/constants"
 	"canvas/models"
 
 	usecases "canvas/usecases/Interfaces"
@@ -20,7 +21,7 @@ func (handler *ShapeHandler) CreateRectangleShape(c *gin.Context) {
 	var req models.RectangleRequestCreate
 
 	if errRequest := c.BindJSON(&req); errRequest != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": errRequest.Error()})
+		responseError(c, http.StatusBadRequest, errRequest)
 		return
 	}
 
@@ -28,11 +29,11 @@ func (handler *ShapeHandler) CreateRectangleShape(c *gin.Context) {
 
 	shape, err := handler.ShapeUsecase.CreateRectangleShape(&newReq, canvasID)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		responseError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, shape)
+	responseSuccess(c, http.StatusOK, constants.SuccessCreateShape, shape)
 }
 
 func (handler *ShapeHandler) CreateCircleShape(c *gin.Context) {
@@ -40,7 +41,7 @@ func (handler *ShapeHandler) CreateCircleShape(c *gin.Context) {
 	var req models.CircleRequestCreate
 
 	if errRequest := c.BindJSON(&req); errRequest != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": errRequest.Error()})
+		responseError(c, http.StatusBadRequest, errRequest)
 		return
 	}
 
@@ -48,11 +49,12 @@ func (handler *ShapeHandler) CreateCircleShape(c *gin.Context) {
 
 	shape, err := handler.ShapeUsecase.CreateCircleShape(&newReq, canvasID)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		responseError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, shape)
+	responseSuccess(c, http.StatusOK, constants.SuccessCreateShape, shape)
+
 }
 
 func (handler *ShapeHandler) CreateTriangleShape(c *gin.Context) {
@@ -60,7 +62,7 @@ func (handler *ShapeHandler) CreateTriangleShape(c *gin.Context) {
 	var req models.TriangleRequestCreate
 
 	if errRequest := c.BindJSON(&req); errRequest != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": errRequest.Error()})
+		responseError(c, http.StatusBadRequest, errRequest)
 		return
 	}
 
@@ -68,11 +70,11 @@ func (handler *ShapeHandler) CreateTriangleShape(c *gin.Context) {
 
 	shape, err := handler.ShapeUsecase.CreateTriangleShape(&newReq, canvasID)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		responseError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, shape)
+	responseSuccess(c, http.StatusOK, constants.SuccessCreateShape, shape)
 }
 
 func (handler *ShapeHandler) GetShapes(c *gin.Context) {
@@ -80,11 +82,11 @@ func (handler *ShapeHandler) GetShapes(c *gin.Context) {
 
 	shape, err := handler.ShapeUsecase.GetShapes(canvasID)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		responseError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, shape)
+	responseSuccess(c, http.StatusOK, constants.SuccessGetShapes, shape)
 }
 
 func (handler *ShapeHandler) GetShape(c *gin.Context) {
@@ -94,21 +96,21 @@ func (handler *ShapeHandler) GetShape(c *gin.Context) {
 	shape, err := handler.ShapeUsecase.GetShape(&req, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			responseError(c, http.StatusNotFound, err)
 			return
 		}
-
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		responseError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, shape)
+	responseSuccess(c, http.StatusOK, constants.SuccessGetShape, shape)
+
 }
 
 func (handler *ShapeHandler) UpdateShape(c *gin.Context) {
 	id, _ := c.Params.Get("shape_id")
 	var req models.ShapeRequestUpdate
 	if err := c.BindJSON(&req); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		responseError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -123,11 +125,12 @@ func (handler *ShapeHandler) UpdateShape(c *gin.Context) {
 
 	shape, errUpdareShape := handler.ShapeUsecase.UpdateShape(&newReq, id)
 	if errUpdareShape != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": errUpdareShape.Error()})
+		responseError(c, http.StatusInternalServerError, errUpdareShape)
 		return
 	}
 
-	c.JSON(http.StatusOK, shape)
+	responseSuccess(c, http.StatusOK, constants.SuccessUpdateShape, shape)
+
 }
 
 func (handler *ShapeHandler) DeleteShape(c *gin.Context) {
@@ -135,8 +138,8 @@ func (handler *ShapeHandler) DeleteShape(c *gin.Context) {
 	id, _ := c.Params.Get("shape_id")
 	err := handler.ShapeUsecase.DeleteShape(&req, id)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		responseError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Shape deleted successfully"})
+	responseSuccess(c, http.StatusOK, constants.SuccessDeleteShape, nil)
 }
