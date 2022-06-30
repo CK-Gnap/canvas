@@ -1,6 +1,7 @@
 package database
 
 import (
+	"canvas/models"
 	"fmt"
 
 	"gorm.io/driver/mysql"
@@ -32,4 +33,9 @@ func connectDB() *gorm.DB {
 	}
 
 	return db
+}
+
+func Migrate() {
+	db := InitDb()
+	db.AutoMigrate(&models.Canvas{}, &models.Shape{})
 }

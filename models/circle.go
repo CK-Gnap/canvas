@@ -1,36 +1,44 @@
 package models
 
 import (
+	models_interfaces "canvas/models/Interfaces"
 	"math"
-	"strconv"
-
-	"gorm.io/gorm"
 )
 
 type Circle struct {
-	Radius float64 `json:"radius"`
+	Id       int64    `json:"id"`
+	CanvasId int64    `json:"canvas_id"`
+	Type     TypeEnum `json:"type"`
+	X        float64  `json:"x"`
+	Y        float64  `json:"y"`
+	Radius   float64  `json:"radius"`
+	Color    string   `json:"color"`
 }
 
-func (Circle *Circle) CreateShape(db *gorm.DB, Shape *Shape, canvasID string) (err error) {
-	canvasId, _ := strconv.ParseInt(canvasID, 10, 64)
-	Shape.CanvasId = canvasId
-	Circle.Radius = Shape.Radius
-	Shape.Area = Circle.GetArea()
-	Shape.Perimeter = Circle.GetPerimeter()
+type CircleRequestCreate struct {
+	Id       int64    `json:"id"`
+	CanvasId int64    `json:"canvas_id"`
+	Type     TypeEnum `json:"type"`
+	X        float64  `json:"x"  binding:"required"`
+	Y        float64  `json:"y"  binding:"required"`
+	Radius   float64  `json:"radius" binding:"required"`
+	Color    string   `json:"color"`
+}
 
-	err = db.Create(Shape).Error
-	if err != nil {
-		return err
+func ConvertToCircle(shape *Shape) models_interfaces.ShapeInterface {
+	return &Circle{
+		Id:       shape.Id,
+		CanvasId: shape.CanvasId,
+		Type:     shape.Type,
+		X:        shape.X,
+		Y:        shape.Y,
+		Radius:   shape.Radius,
+		Color:    shape.Color,
 	}
-	return nil
 }
 
-func (Circle *Circle) UpdateShape(db *gorm.DB, Shape *Shape) (err error) {
-	Circle.Radius = Shape.Radius
-	Shape.Area = Circle.GetArea()
-	Shape.Perimeter = Circle.GetPerimeter()
-	db.Save(Shape)
-	return nil
+func (Circle *Circle) GetType() string {
+	return string(Circle.Type)
 }
 
 func (Circle *Circle) GetArea() float64 {
