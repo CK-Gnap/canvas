@@ -40,14 +40,15 @@ func canvasDelivery(r *gin.Engine, usecase usecases_interfaces.CanvasUsecaseInte
 		CanvasUsecase: usecase,
 	}
 
-	r.POST("/canvas", handler.CreateCanvas)
-	r.GET("/canvas", handler.GetCanvases)
-	r.GET("/canvas/:canvas_id", handler.GetCanvas)
-	r.PUT("/canvas/:canvas_id", handler.UpdateCanvas)
-	r.DELETE("/canvas/:canvas_id", handler.DeleteCanvas)
-	r.GET("/canvas/:canvas_id/totalArea", handler.GetTotalArea)
-	r.GET("/canvas/:canvas_id/totalPerimeter", handler.GetTotalPerimeter)
-	r.GET("/canvas/:canvas_id/image", handler.DrawCanvas)
+	canvas := r.Group("/canvas")
+	canvas.POST("", handler.CreateCanvas)
+	canvas.GET("", handler.GetCanvases)
+	canvas.GET("/:canvas_id", handler.GetCanvas)
+	canvas.PUT("/:canvas_id", handler.UpdateCanvas)
+	canvas.DELETE("/:canvas_id", handler.DeleteCanvas)
+	canvas.GET("/:canvas_id/totalArea", handler.GetTotalArea)
+	canvas.GET("/:canvas_id/totalPerimeter", handler.GetTotalPerimeter)
+	canvas.GET("/:canvas_id/image", handler.DrawCanvas)
 }
 
 func shapeDelivery(r *gin.Engine, usecase usecases_interfaces.ShapeUsecaseInterface) {
@@ -56,11 +57,12 @@ func shapeDelivery(r *gin.Engine, usecase usecases_interfaces.ShapeUsecaseInterf
 		ShapeUsecase: usecase,
 	}
 
-	r.POST("/canvas/:canvas_id/rectangle", handler.CreateRectangleShape)
-	r.POST("/canvas/:canvas_id/circle", handler.CreateCircleShape)
-	r.POST("/canvas/:canvas_id/triangle", handler.CreateTriangleShape)
-	r.GET("/canvas/:canvas_id/shapes", handler.GetShapes)
-	r.GET("/canvas/shapes/:shape_id", handler.GetShape)
-	r.PUT("/canvas/shapes/:shape_id", handler.UpdateShape)
-	r.DELETE("/canvas/shapes/:shape_id", handler.DeleteShape)
+	canvas := r.Group("/canvas")
+	canvas.POST("/:canvas_id/rectangle", handler.CreateRectangleShape)
+	canvas.POST("/:canvas_id/circle", handler.CreateCircleShape)
+	canvas.POST("/:canvas_id/triangle", handler.CreateTriangleShape)
+	canvas.GET("/:canvas_id/shapes", handler.GetShapes)
+	canvas.GET("/shapes/:shape_id", handler.GetShape)
+	canvas.PUT("/shapes/:shape_id", handler.UpdateShape)
+	canvas.DELETE("/shapes/:shape_id", handler.DeleteShape)
 }
