@@ -1,10 +1,10 @@
 package usecases
 
 import (
+	"canvas/constants"
 	"canvas/models"
 	models_interfaces "canvas/models/Interfaces"
 	"canvas/repositories/mocks"
-	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -73,7 +73,7 @@ func TestCreateRectangleShapeError(t *testing.T) {
 			name:     "when unhappy",
 			canvasId: "1",
 			request:  &models.Rectangle{},
-			errMsg:   errors.New("Error creating shape"),
+			errMsg:   constants.ErrCreateShape,
 		},
 	}
 	for _, test := range tests {
@@ -82,8 +82,7 @@ func TestCreateRectangleShapeError(t *testing.T) {
 			mockCanvasRepo := new(mocks.CanvasRepoInterface)
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
 			mockCanvasRepo.On("GetCanvas", &models.Canvas{}, test.canvasId).Return(nil).Once()
-
-			mockShapeRepo.On("CreateShape", mock.Anything, test.canvasId).Return(errors.New("Error creating shape")).Once()
+			mockShapeRepo.On("CreateShape", mock.Anything, test.canvasId).Return(constants.ErrCreateShape).Once()
 
 			usecase := NewShapeUsecase(mockCanvasRepo, mockShapeRepo)
 			_, err := usecase.CreateRectangleShape(test.request, test.canvasId)
@@ -156,7 +155,7 @@ func TestCreateCircleShapeError(t *testing.T) {
 			name:     "when unhappy",
 			canvasId: "1",
 			request:  &models.Circle{},
-			errMsg:   errors.New("Error creating shape"),
+			errMsg:   constants.ErrCreateShape,
 		},
 	}
 	for _, test := range tests {
@@ -165,8 +164,7 @@ func TestCreateCircleShapeError(t *testing.T) {
 			mockCanvasRepo := new(mocks.CanvasRepoInterface)
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
 			mockCanvasRepo.On("GetCanvas", &models.Canvas{}, test.canvasId).Return(nil).Once()
-
-			mockShapeRepo.On("CreateShape", mock.Anything, test.canvasId).Return(errors.New("Error creating shape")).Once()
+			mockShapeRepo.On("CreateShape", mock.Anything, test.canvasId).Return(constants.ErrCreateShape).Once()
 
 			usecase := NewShapeUsecase(mockCanvasRepo, mockShapeRepo)
 			_, err := usecase.CreateCircleShape(test.request, test.canvasId)
@@ -249,7 +247,7 @@ func TestCreateTriangleShapeError(t *testing.T) {
 				Height:   100,
 				Color:    "#ffffff",
 			},
-			errMsg: errors.New("Error creating shape"),
+			errMsg: constants.ErrCreateShape,
 		},
 	}
 	for _, test := range tests {
@@ -258,8 +256,7 @@ func TestCreateTriangleShapeError(t *testing.T) {
 			mockCanvasRepo := new(mocks.CanvasRepoInterface)
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
 			mockCanvasRepo.On("GetCanvas", &models.Canvas{}, test.canvasId).Return(nil).Once()
-
-			mockShapeRepo.On("CreateShape", mock.Anything, test.canvasId).Return(errors.New("Error creating shape")).Once()
+			mockShapeRepo.On("CreateShape", mock.Anything, test.canvasId).Return(constants.ErrCreateShape).Once()
 
 			usecase := NewShapeUsecase(mockCanvasRepo, mockShapeRepo)
 			_, err := usecase.CreateTriangleShape(test.request, test.canvasId)
@@ -314,7 +311,7 @@ func TestGetShapesError(t *testing.T) {
 		{
 			name:     "when unhappy",
 			canvasId: "1",
-			errMsg:   errors.New("Error getting shapes"),
+			errMsg:   constants.ErrGetShapes,
 		},
 	}
 	for _, test := range tests {
@@ -322,7 +319,7 @@ func TestGetShapesError(t *testing.T) {
 			mockCanvasRepo := new(mocks.CanvasRepoInterface)
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
 			mockCanvasRepo.On("GetCanvas", &models.Canvas{}, test.canvasId).Return(nil).Once()
-			mockShapeRepo.On("GetShapes", mock.Anything, test.canvasId).Return(nil, errors.New("Error getting shapes")).Once()
+			mockShapeRepo.On("GetShapes", mock.Anything, test.canvasId).Return(nil, constants.ErrGetShapes).Once()
 
 			usecase := NewShapeUsecase(mockCanvasRepo, mockShapeRepo)
 			_, err := usecase.GetShapes(test.canvasId)
@@ -373,13 +370,13 @@ func TestGetShapeError(t *testing.T) {
 			name:   "when unhappy",
 			id:     "",
 			shape:  &models.Shape{},
-			errMsg: errors.New("Error getting shape"),
+			errMsg: constants.ErrGetShape,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
-			mockShapeRepo.On("GetShape", test.shape, test.id).Return(errors.New("Error getting shape")).Once()
+			mockShapeRepo.On("GetShape", test.shape, test.id).Return(constants.ErrGetShape).Once()
 
 			usecase := NewShapeUsecase(nil, mockShapeRepo)
 			_, err := usecase.GetShape(test.shape, test.id)
@@ -478,7 +475,7 @@ func TestUpdateShapeError(t *testing.T) {
 				Radius:   0,
 				Color:    "#ffffff",
 			},
-			errMsg: errors.New("Error updating shape"),
+			errMsg: constants.ErrUpdateShape,
 		},
 	}
 	for _, test := range tests {
@@ -486,7 +483,7 @@ func TestUpdateShapeError(t *testing.T) {
 
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
 			mockShapeRepo.On("GetShape", &models.Shape{}, test.id).Return(nil).Once()
-			mockShapeRepo.On("UpdateShape", mock.Anything, test.id).Return(nil, errors.New("Error updating shape")).Once()
+			mockShapeRepo.On("UpdateShape", mock.Anything, test.id).Return(nil, constants.ErrUpdateShape).Once()
 
 			usecase := NewShapeUsecase(nil, mockShapeRepo)
 			_, err := usecase.UpdateShape(test.request, test.id)
@@ -538,14 +535,14 @@ func TestDeleteShapeError(t *testing.T) {
 			name:   "when unhappy",
 			id:     "1",
 			shape:  &models.Shape{},
-			errMsg: errors.New("Error deleting shape"),
+			errMsg: constants.ErrDeleteShape,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
 			mockShapeRepo.On("GetShape", test.shape, test.id).Return(nil).Once()
-			mockShapeRepo.On("DeleteShape", mock.Anything, test.id).Return(errors.New("Error deleting shape")).Once()
+			mockShapeRepo.On("DeleteShape", mock.Anything, test.id).Return(constants.ErrDeleteShape).Once()
 
 			usecase := NewShapeUsecase(nil, mockShapeRepo)
 			err := usecase.DeleteShape(test.shape, test.id)

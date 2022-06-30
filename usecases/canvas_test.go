@@ -1,10 +1,10 @@
 package usecases
 
 import (
+	"canvas/constants"
 	models "canvas/models"
 
 	"canvas/repositories/mocks"
-	"errors"
 
 	"testing"
 
@@ -60,7 +60,7 @@ func TestCreateCanvasError(t *testing.T) {
 				Height: 100,
 				Color:  "#ffffff",
 			},
-			errMsg: errors.New("Error creating canvas"),
+			errMsg: constants.ErrCreateCanvas,
 		},
 	}
 	for _, test := range tests {
@@ -68,7 +68,7 @@ func TestCreateCanvasError(t *testing.T) {
 
 			mockCanvasRepo := new(mocks.CanvasRepoInterface)
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
-			mockCanvasRepo.On("CreateCanvas", test.request).Return(errors.New("Error creating canvas")).Once()
+			mockCanvasRepo.On("CreateCanvas", test.request).Return(constants.ErrCreateCanvas).Once()
 
 			usecase := NewCanvasUsecase(mockCanvasRepo, mockShapeRepo)
 			_, err := usecase.CreateCanvas(test.request)
@@ -118,7 +118,7 @@ func TestGetCanvasesError(t *testing.T) {
 	}{
 		{
 			name:   "when unhappy",
-			errMsg: errors.New("Error getting canvases"),
+			errMsg: constants.ErrGetCanvases,
 		},
 	}
 	for _, test := range tests {
@@ -126,7 +126,7 @@ func TestGetCanvasesError(t *testing.T) {
 
 			mockCanvasRepo := new(mocks.CanvasRepoInterface)
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
-			mockCanvasRepo.On("GetCanvases", mock.Anything).Return(errors.New("Error getting canvases")).Once()
+			mockCanvasRepo.On("GetCanvases", mock.Anything).Return(constants.ErrGetCanvases).Once()
 
 			usecaseCanvas := NewCanvasUsecase(mockCanvasRepo, mockShapeRepo)
 			_, err := usecaseCanvas.GetCanvases()
@@ -182,7 +182,7 @@ func TestGetCanvasError(t *testing.T) {
 			name:   "when unhappy",
 			id:     "",
 			canvas: &models.Canvas{},
-			errMsg: errors.New("Error getting canvas"),
+			errMsg: constants.ErrGetCanvas,
 		},
 	}
 	for _, test := range tests {
@@ -190,7 +190,7 @@ func TestGetCanvasError(t *testing.T) {
 
 			mockCanvasRepo := new(mocks.CanvasRepoInterface)
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
-			mockCanvasRepo.On("GetCanvas", test.canvas, test.id).Return(errors.New("Error getting canvas")).Once()
+			mockCanvasRepo.On("GetCanvas", test.canvas, test.id).Return(constants.ErrGetCanvas).Once()
 
 			usecaseCanvas := NewCanvasUsecase(mockCanvasRepo, mockShapeRepo)
 			_, errCanvas := usecaseCanvas.GetCanvas(test.canvas, test.id)
@@ -261,7 +261,7 @@ func TestUpdateCanvasError(t *testing.T) {
 				Height: 100,
 				Color:  "#ffffff",
 			},
-			errMsg: errors.New("Error updating canvas"),
+			errMsg: constants.ErrUpdateCanvas,
 		},
 	}
 	for _, test := range tests {
@@ -270,7 +270,7 @@ func TestUpdateCanvasError(t *testing.T) {
 			mockCanvasRepo := new(mocks.CanvasRepoInterface)
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
 			mockCanvasRepo.On("GetCanvas", test.canvas, test.id).Return(nil).Once()
-			mockCanvasRepo.On("UpdateCanvas", test.request, test.id).Return(errors.New("Error updating canvas")).Once()
+			mockCanvasRepo.On("UpdateCanvas", test.request, test.id).Return(constants.ErrUpdateCanvas).Once()
 
 			usecase := NewCanvasUsecase(mockCanvasRepo, mockShapeRepo)
 			_, err := usecase.UpdateCanvas(test.request, test.id)
@@ -324,7 +324,7 @@ func TestDeleteCanvasError(t *testing.T) {
 			name:   "when unhappy",
 			id:     "",
 			canvas: &models.Canvas{},
-			errMsg: errors.New("Error deleting canvas"),
+			errMsg: constants.ErrDeleteCanvas,
 		},
 	}
 	for _, test := range tests {
@@ -333,7 +333,7 @@ func TestDeleteCanvasError(t *testing.T) {
 			mockCanvasRepo := new(mocks.CanvasRepoInterface)
 			mockShapeRepo := new(mocks.ShapeRepoInterface)
 			mockCanvasRepo.On("GetCanvas", test.canvas, test.id).Return(nil).Once()
-			mockCanvasRepo.On("DeleteCanvas", test.canvas, test.id).Return(errors.New("Error deleting canvas")).Once()
+			mockCanvasRepo.On("DeleteCanvas", test.canvas, test.id).Return(constants.ErrDeleteCanvas).Once()
 
 			usecase := NewCanvasUsecase(mockCanvasRepo, mockShapeRepo)
 			err := usecase.DeleteCanvas(test.canvas, test.id)

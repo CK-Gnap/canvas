@@ -1,11 +1,11 @@
 package usecases
 
 import (
+	"canvas/constants"
 	models "canvas/models"
 	models_interfaces "canvas/models/Interfaces"
 	repositories_interfaces "canvas/repositories/Interfaces"
 	usecases_interfaces "canvas/usecases/Interfaces"
-	"errors"
 	"strconv"
 )
 
@@ -27,7 +27,7 @@ func (usecase *ShapeUsecase) CreateRectangleShape(Rectangle *models.Rectangle, c
 
 	handleGetCanvasErr := usecase.canvasRepo.GetCanvas(&canvas, canvasID)
 	if handleGetCanvasErr != nil {
-		return nil, errors.New("Error getting canvas")
+		return nil, constants.ErrGetCanvas
 	}
 
 	shape := models.Shape{
@@ -42,7 +42,7 @@ func (usecase *ShapeUsecase) CreateRectangleShape(Rectangle *models.Rectangle, c
 
 	handleShapeErr := usecase.shapeRepo.CreateShape(&shape, canvasID)
 	if handleShapeErr != nil {
-		return nil, errors.New("Error creating shape")
+		return nil, constants.ErrCreateShape
 	}
 
 	return ConvertTypeOfShape(&shape), nil
@@ -54,7 +54,7 @@ func (usecase *ShapeUsecase) CreateCircleShape(Circle *models.Circle, canvasID s
 
 	handleGetCanvasErr := usecase.canvasRepo.GetCanvas(&canvas, canvasID)
 	if handleGetCanvasErr != nil {
-		return nil, handleGetCanvasErr
+		return nil, constants.ErrGetCanvas
 	}
 
 	shape := models.Shape{
@@ -68,7 +68,7 @@ func (usecase *ShapeUsecase) CreateCircleShape(Circle *models.Circle, canvasID s
 
 	handleShapeErr := usecase.shapeRepo.CreateShape(&shape, canvasID)
 	if handleShapeErr != nil {
-		return nil, handleShapeErr
+		return nil, constants.ErrCreateShape
 	}
 
 	return ConvertTypeOfShape(&shape), nil
@@ -80,7 +80,7 @@ func (usecase *ShapeUsecase) CreateTriangleShape(Triangle *models.Triangle, canv
 
 	handleGetCanvasErr := usecase.canvasRepo.GetCanvas(&canvas, canvasID)
 	if handleGetCanvasErr != nil {
-		return nil, handleGetCanvasErr
+		return nil, constants.ErrGetCanvas
 	}
 
 	shape := models.Shape{
@@ -95,7 +95,7 @@ func (usecase *ShapeUsecase) CreateTriangleShape(Triangle *models.Triangle, canv
 
 	handleShapeErr := usecase.shapeRepo.CreateShape(&shape, canvasID)
 	if handleShapeErr != nil {
-		return nil, handleShapeErr
+		return nil, constants.ErrCreateShape
 	}
 
 	return ConvertTypeOfShape(&shape), nil
@@ -107,12 +107,12 @@ func (usecase *ShapeUsecase) GetShapes(canvasID string) ([]models_interfaces.Sha
 
 	handleGetCanvasErr := usecase.canvasRepo.GetCanvas(&canvas, canvasID)
 	if handleGetCanvasErr != nil {
-		return nil, errors.New("Error getting canvas")
+		return nil, constants.ErrGetCanvas
 	}
 
 	shapes, handleShapeErr := usecase.shapeRepo.GetShapes(&shapesModel, canvasID)
 	if handleShapeErr != nil {
-		return nil, errors.New("Error getting shapes")
+		return nil, constants.ErrGetShapes
 	}
 	return ConvertTypeOfShapes(shapes), nil
 }
@@ -120,7 +120,7 @@ func (usecase *ShapeUsecase) GetShapes(canvasID string) ([]models_interfaces.Sha
 func (usecase *ShapeUsecase) GetShape(Shape *models.Shape, id string) (models_interfaces.ShapeInterface, error) {
 	handleShapeErr := usecase.shapeRepo.GetShape(Shape, id)
 	if handleShapeErr != nil {
-		return nil, errors.New("Error getting shape")
+		return nil, constants.ErrGetShape
 	}
 
 	return ConvertTypeOfShape(Shape), nil
@@ -131,7 +131,7 @@ func (usecase *ShapeUsecase) UpdateShape(Shape *models.Shape, id string) (models
 
 	handleGetShapeErr := usecase.shapeRepo.GetShape(&checkShape, id)
 	if handleGetShapeErr != nil {
-		return nil, errors.New("Error getting shape")
+		return nil, constants.ErrGetShape
 	}
 
 	Shape.Id = checkShape.Id
@@ -139,7 +139,7 @@ func (usecase *ShapeUsecase) UpdateShape(Shape *models.Shape, id string) (models
 	Shape.Type = checkShape.Type
 	update, handleUpdateShapeErr := usecase.shapeRepo.UpdateShape(Shape, id)
 	if handleUpdateShapeErr != nil {
-		return nil, errors.New("Error updating shape")
+		return nil, constants.ErrUpdateShape
 	}
 
 	return ConvertTypeOfShape(update), nil
@@ -150,12 +150,12 @@ func (usecase *ShapeUsecase) DeleteShape(Shape *models.Shape, id string) error {
 
 	handleGetShapeErr := usecase.shapeRepo.GetShape(&checkShape, id)
 	if handleGetShapeErr != nil {
-		return errors.New("Error getting shape")
+		return constants.ErrGetShape
 	}
 
 	handleShapeErr := usecase.shapeRepo.DeleteShape(Shape, id)
 	if handleShapeErr != nil {
-		return errors.New("Error deleting shape")
+		return constants.ErrDeleteShape
 	}
 	return handleShapeErr
 }
