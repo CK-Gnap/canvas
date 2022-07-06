@@ -14,4 +14,5 @@ var (
 	ErrUpdateShape  = errors.New("error updating shape")
 	ErrDeleteShape  = errors.New("error deleting shape")
 	ErrInvalidShape = errors.New("error invalid shape")
+	ErrSaveJPG      = errors.New("error saving jpg")
 )

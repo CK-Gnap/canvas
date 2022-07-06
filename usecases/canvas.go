@@ -171,8 +171,10 @@ func (usecase *CanvasUsecase) DrawCanvas(Canvas *models.Canvas, id string) (stri
 	}
 
 	canvasName := Canvas.Name + ".jpg"
-
-	dc.SaveJPG(canvasName, 100)
+	errSaveJPG := gg.SaveJPG(canvasName, canvas, 100)
+	if errSaveJPG != nil {
+		return "", constants.ErrSaveJPG
+	}
 
 	return canvasName, nil
 }
