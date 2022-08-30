@@ -2,7 +2,6 @@ package database
 
 import (
 	"canvas/models"
-	"fmt"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -28,8 +27,7 @@ func connectDB() *gorm.DB {
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		fmt.Println(err)
-		return nil
+		return err
 	}
 
 	return db
