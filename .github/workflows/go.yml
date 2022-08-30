@@ -11,15 +11,14 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_DATABASE: go_mysql_suite_test
+      DB_DATABASE: go-canvas
       DB_USER: root
-      DB_PASSWORD: root
     
     steps:
       - name: "Mysql Setup"
         run : |
           sudo /etc/init.d/mysql start
-          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }}
 
       - name: "Checkout Code"
         uses: actions/checkout@v2
