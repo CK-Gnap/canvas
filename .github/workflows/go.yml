@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      DB_DATABASE: go-canvas
+      DB_DATABASE: go_canvas
       DB_USER: root
       DB_PASSWORD: root
       
