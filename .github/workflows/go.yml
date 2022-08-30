@@ -10,7 +10,17 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      DB_DATABASE: go-canvas
+      DB_USER: root
+      
     steps:
+    - name: "Mysql Setup"
+      run : |
+          sudo /etc/init.d/mysql start
+          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }}
+    
+    - name: checkout Code
     - uses: actions/checkout@v3
 
     - name: Set up Go
