@@ -19,7 +19,7 @@ jobs:
     - name: "Mysql Setup"
       run : |
           sudo /etc/init.d/mysql start
-          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+          mysql --host 127.0.0.1 --port 3306 -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
           
     - uses: actions/checkout@v3
 
