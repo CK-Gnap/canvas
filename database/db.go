@@ -10,7 +10,7 @@ import (
 
 const DB_USERNAME = "root"
 const DB_PASSWORD = "root"
-const DB_NAME = "go-canvas"
+const DB_NAME = "go_canvas"
 const DB_HOST = "mysql"
 const DB_PORT = "3306"
 
