@@ -10,16 +10,12 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    env:
-      DB_DATABASE: go_canvas
-      DB_USER: root
-      DB_PASSWORD: root
-      
+    
     steps:
     - name: "Mysql Setup"
       run : |
           sudo /etc/init.d/mysql start
-          mysql --host 127.0.0.1 --port 3306 -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+          mysql --host 127.0.0.1 --port 3306 -e 'CREATE DATABASE ${{ secrets.DB_DATABASE }};' -u${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }}
           
     - uses: actions/checkout@v3
 
